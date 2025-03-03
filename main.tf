@@ -11,6 +11,6 @@ resource "random_id" "bucket_suffix" {
 # Create a Cloud Storage Bucket
 resource "google_storage_bucket" "my_bucket" {
   name     = "my-terraform-bucket-${random_id.bucket_suffix.hex}"
-  
+  location = "ÜS"
 }
 
