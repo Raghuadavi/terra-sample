@@ -13,26 +13,19 @@ resource "google_storage_bucket" "my_bucket" {
   name     = "my-terraform-bucket-${random_id.bucket_suffix.hex}"
   location = "US"
 }
-boot_disk {
+resource "google_compute_instance" "my_vm" {
+  name         = "my-terraform-vm-${random_id.vm_suffix.hex}"
+  machine_type = "e2-medium"
+  zone         = "us-central1-a"
+
+  boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      image = "debian-cloud/debian-11"
     }
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.hashicat.self_link
-    access_config {
-    }
+    network = "default"
+    access_config {}
   }
-
-  metadata = {
-    ssh-keys = "ubuntu:${chomp(tls_private_key.ssh-key.public_key_openssh)} terraform"
-  }
-
-  tags = ["http-server"]
-
-  labels = {
-    name = "hashicat"
-  }
-
 }
