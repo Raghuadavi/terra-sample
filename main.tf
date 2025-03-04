@@ -13,4 +13,8 @@ resource "google_storage_bucket" "my_bucket" {
   name     = "my-terraform-bucket-${random_id.bucket_suffix.hex}"
   location = "US"
 }
-
+resource "google_compute_instance" "default" {
+  name         = "my-instance"
+  machine_type = "n2-standard-2"
+  zone         = "us-central1-a"
+}
