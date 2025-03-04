@@ -13,16 +13,26 @@ resource "google_storage_bucket" "my_bucket" {
   name     = "my-terraform-bucket-${random_id.bucket_suffix.hex}"
   location = "US"
 }
-resource "google_compute_firewall" "http-server" {
-  name    = "${var.prefix}-default-allow-ssh-http"
-  network = google_compute_network.hashicat.self_link
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22", "80"]
+boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+    }
   }
 
-  // Allow traffic from everywhere to instances with an http-server tag
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["http-server"]
+  network_interface {
+    subnetwork = google_compute_subnetwork.hashicat.self_link
+    access_config {
+    }
+  }
+
+  metadata = {
+    ssh-keys = "ubuntu:${chomp(tls_private_key.ssh-key.public_key_openssh)} terraform"
+  }
+
+  tags = ["http-server"]
+
+  labels = {
+    name = "hashicat"
+  }
+
 }
